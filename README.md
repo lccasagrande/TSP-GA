@@ -2,7 +2,8 @@
 This repository contains a generic Python implementation of a Genetic Algorithm to solve the Travelling Salesman Problem (TSP). Geographic coordinates of cities are provided as input to generate a edge-weighted complete graph where the weights are the distance between the cities in kilometers.
 
 ## Output Example
-![output-ga](https://imgur.com/uGG0vP0)
+
+![output-ga](https://i.imgur.com/Zkj0z7m.png)
 
 ## Requirements
 You'll need Python 3.x x64 to be able to run theses projects.
