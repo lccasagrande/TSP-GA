@@ -3,11 +3,14 @@ import tsp_ga as ga
 import pandas as pd
 from random import sample
 from mpl_toolkits.basemap import Basemap
+import random
 
 
 def get_genes_from(fn, sample_n=0):
-    df = pd.read_csv(fn)
-    genes = [ga.Gene(row['city'], row['latitude'], row['longitude'])
+    df = data = pd.read_excel(r'friday_xy_1.xlsx')
+    random.seed(1)
+    df = df.sample(30).reset_index()
+    genes = [ga.Gene(row['USER_Akt_1'], row['y'], row['x'])
              for _, row in df.iterrows()]
 
     return genes if sample_n <= 0 else sample(genes, sample_n)
@@ -54,3 +57,4 @@ def plot_route(individual):
             x2, y2 = m(individual.genes[i+1].lng, individual.genes[i+1].lat)
 
         plt.plot([x, x2], [y, y2], 'k-', c='r')
+        plt.savefig('plot_route.png')

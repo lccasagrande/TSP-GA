@@ -3,7 +3,9 @@ import random
 import argparse
 import tsp_ga as ga
 from datetime import datetime
-
+from data import Gene
+from pool import Population
+import pool as pl
 
 def run(args):
     genes = utils.get_genes_from(args.cities_fn)
@@ -11,7 +13,7 @@ def run(args):
     if args.verbose:
         print("-- Running TSP-GA with {} cities --".format(len(genes)))
 
-    history = ga.run_ga(genes, args.pop_size, args.n_gen,
+    history = pl.run_ga(genes, args.pop_size, args.n_gen,
                         args.tourn_size, args.mut_rate, args.verbose)
 
     if args.verbose:
