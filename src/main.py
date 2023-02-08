@@ -8,23 +8,41 @@ from pool import Population
 import pool as pl
 
 def run(args):
-    genes = utils.get_genes_from(args.cities_fn)
-
-    if args.verbose:
-        print("-- Running TSP-GA with {} cities --".format(len(genes)))
-
+    df = utils.get_genes_from(args.cities_fn)
+    n_clusters = 6
+    sample_n = 0
 
 
-    history = pl.run_ga(genes, args.pop_size, args.n_gen,
-                        args.tourn_size, args.mut_rate, args.verbose)
+    for i in range(n_clusters-1):
+        clus = df.loc[df['cluster_label'] == i]
+        
+        print(clus)
+        genes = [ga.Gene(row['USER_Akt_1'], row['y'], row['x'])
+            for _, row in clus.iterrows()]
 
-    if args.verbose:
-        print("-- Drawing Route --")
 
-    utils.plot(history['cost'], history['route'])
+        if sample_n <= 0:
+            genes = genes
+        else: 
+            genes = sample(genes, sample_n)
 
-    if args.verbose:
-        print("-- Done --")
+
+
+        if args.verbose:
+            print("-- Running TSP-GA with {} cities --".format(len(genes)))
+
+
+
+        history = pl.run_ga(genes, args.pop_size, args.n_gen,
+                            args.tourn_size, args.mut_rate, args.verbose)
+
+        if args.verbose:
+            print("-- Drawing Route --")
+
+        utils.plot(history['cost'], history['route'])
+
+        if args.verbose:
+            print("-- Done --")
 
 
 
@@ -36,17 +54,7 @@ def run(args):
 #         for vehicle in neighbours:
 
 
-class VRP(): 
-    
-    def __init__(self):
-        super.init()
-        self.nvehicles = args.nvehicles
-        self.vehicle_list = []
 
-    def create(self): 
-        for vehicle in range(self.nvehicles):
-            vehicle = Individual()
-            self.vehicle_list.add(vehicle)
 
 
 if __name__ == "__main__":
