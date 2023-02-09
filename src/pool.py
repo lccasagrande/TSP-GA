@@ -95,35 +95,38 @@ def selection(population, competitors_n):
 
 def run_ga(genes, pop_size, n_gen, tourn_size, mut_rate, verbose=1):
 
-    for i in range (6): 
-        population = Population.gen_individuals(pop_size, genes)
-        history = {'cost': [population.get_fittest().travel_cost]}
-        counter, generations, min_cost = 0, 0, maxsize
 
-        if verbose:
-            print("-- TSP-GA -- Initiating evolution...")
+    population = Population.gen_individuals(pop_size, genes)
+    history = {'cost': [population.get_fittest().travel_cost]}
+    counter, generations, min_cost = 0, 0, maxsize
 
-        start_time = time()
-        while counter < n_gen:
-            population = evolve(population, tourn_size, mut_rate)
-            cost = population.get_fittest().travel_cost
+    if verbose:
+        print("-- TSP-GA -- Initiating evolution...")
 
-            if cost < min_cost:
-                counter, min_cost = 0, cost
-            else:
-                counter += 1
+    start_time = time()
+    while counter < n_gen:
+        population = evolve(population, tourn_size, mut_rate)
+        cost = population.get_fittest().travel_cost
 
-            generations += 1
-            history['cost'].append(cost)
+        # print (cost)
+        if cost < min_cost:
+            counter, min_cost = 0, cost
+        else:
+            counter += 1
 
-        total_time = round(time() - start_time, 6)
+        generations += 1
 
-        if verbose:
-            print("-- TSP-GA -- Evolution finished after {} generations in {} s".format(generations, total_time))
-            print("-- TSP-GA -- Minimum travelling cost {} KM".format(min_cost))
+        cost = cost
+        history['cost'].append(cost)
 
-        history['generations'] = generations
-        history['total_time'] = total_time
-        history['route'] = population.get_fittest()
+    total_time = round(time() - start_time, 1)
+
+    if verbose:
+        print("-- TSP-GA -- Evolution finished after {} generations in {} s".format(generations, total_time))
+        print("-- TSP-GA -- Minimum travelling cost {} m".format(min_cost))
+
+    history['generations'] = generations
+    history['total_time'] = total_time
+    history['route'] = population.get_fittest()
 
     return history
