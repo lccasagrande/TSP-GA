@@ -7,13 +7,15 @@ import random
 import geopandas
 import sklearn
 from sklearn.cluster import KMeans
+from cycler import cycler
+import numpy as np
 
 
-def get_genes_from(sample_n=0):
+def get_genes_from(fn, n_clusters, sample_n=0):
     df = data = pd.read_excel(r'friday_xy_1.xlsx')
     random.seed(1)
-    df = df.sample(100).reset_index()
-
+    df = df.sample(500).reset_index()
+    n_clusters = n_clusters
     df = geopandas.GeoDataFrame(df, geometry=geopandas.points_from_xy(df.x, df.y))
 
 
@@ -31,25 +33,28 @@ def get_genes_from(sample_n=0):
     # plt.savefig('kmean')
 
 
-    kmeans = KMeans(n_clusters = 6, init ='k-means++')
+    kmeans = KMeans(n_clusters = n_clusters, init ='k-means++')
     kmeans.fit(df[df.columns[2:4]]) # Compute k-means clustering.
     df['cluster_label'] = kmeans.fit_predict(df[df.columns[2:4]])
     centers = kmeans.cluster_centers_ # Coordinates of cluster centers.
     labels = kmeans.predict(df[df.columns[2:4]]) # Labels of each point
-    df.head(10)
+    # df.head(40)
 
     df.plot.scatter(x = 'x', y = 'y', c=labels, s=50, cmap='viridis')
     plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, alpha=0.5)
     plt.savefig('clusters.png')
-    global df
-    genes = [ga.Gene(row['USER_Akt_1'], row['y'], row['x'])
-             for _, row in df.iterrows()]
 
-    print(genes)
+    # route_list =[]
+    # for i in range(n_clusters-1):
+    #     route_list += df.loc[df['cluster_label'] == i]
+    # print(route_list) 
 
-    return genes if sample_n <= 0 else sample(genes, sample_n)
+    print(df)
+    return df
 
-get_genes_from()
+
+
+# get_genes_from()
 
 
 
@@ -58,10 +63,10 @@ get_genes_from()
 def plot(costs, individual, save_to=None):
     plt.figure(1)
     plt.subplot(121)
-    plot_ga_convergence(costs)
-
+    color = np.random.rand(3,)
+    plot_ga_convergence(costs, color)
     plt.subplot(122)
-    plot_route(individual)
+    plot_route(individual, color)
 
     if save_to is not None:
         plt.savefig(save_to)
@@ -69,31 +74,33 @@ def plot(costs, individual, save_to=None):
     else:
         plt.show()
 
-def plot_ga_convergence(costs):
+def plot_ga_convergence(costs, color):
     x = range(len(costs))
     plt.title("GA Convergence")
     plt.xlabel('generation')
-    plt.ylabel('cost (KM)')
-    plt.text(x[len(x) // 2], costs[0], 'min cost: {} KM'.format(costs[-1]), ha='center', va='center')
-    plt.plot(x, costs, '-')
+    plt.ylabel('cost (m)')
+    plt.text(x[len(x) // 2], costs[0], 'min cost: {} m'.format(costs[-1]), ha='center', va='center')
+    plt.plot(x, costs, '-', c = color)
 
 
-def plot_route(individual):
+def plot_route(individual, color):
     m = Basemap(projection='lcc', resolution=None,
                 width=5E6, height=5E6,
                 lat_0=-15, lon_0=-56)
 
     plt.axis('off')
     plt.title("Shortest Route")
-
+    
+    
     for i in range(0, len(individual.genes)):
         x, y = m(individual.genes[i].lng, individual.genes[i].lat)
-
-        plt.plot(x, y, 'ok', c='r', markersize=5)
+        
+        plt.plot(x, y, 'ok', color = color,  markersize=5)
         if i == len(individual.genes) - 1:
             x2, y2 = m(individual.genes[0].lng, individual.genes[0].lat)
         else:
             x2, y2 = m(individual.genes[i+1].lng, individual.genes[i+1].lat)
 
-        plt.plot([x, x2], [y, y2], 'k-', c='r')
+
+        plt.plot([x, x2], [y, y2],  'k-' , color = color)
         plt.savefig('plot_route.png')

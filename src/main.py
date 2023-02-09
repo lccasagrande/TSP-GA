@@ -6,25 +6,30 @@ from datetime import datetime
 from data import Gene
 from pool import Population
 import pool as pl
-
+from random import sample
+import numpy as np
 def run(args):
-    df = utils.get_genes_from(args.cities_fn)
-    n_clusters = 6
-    sample_n = 0
+
+    # n_clusters = args.nvehicles 
+    df = utils.get_genes_from(args.cities_fn, args.nvehicles)
+    
 
 
-    for i in range(n_clusters-1):
+    for i in range(args.nvehicles):
         clus = df.loc[df['cluster_label'] == i]
-        
+        clus
+        clus.loc[len(clus.index)] = [0,'Depot', 69.71059355829574, 19.01346092171551, None, i]
         print(clus)
+
         genes = [ga.Gene(row['USER_Akt_1'], row['y'], row['x'])
             for _, row in clus.iterrows()]
-
+        # sample_n = random.randint(4,np.round(len(clus))) #Ensuring sample_n changes each time
+        sample_n = 0
 
         if sample_n <= 0:
             genes = genes
         else: 
-            genes = sample(genes, sample_n)
+            genes = sample(genes, sample_n) #
 
 
 

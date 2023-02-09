@@ -9,7 +9,7 @@ from data import Gene
 
 class Individual:  # Route: possible solution to TSP
     def __init__(self, genes):
-        assert(len(genes) > 3)
+        assert(len(genes) > 2)
         self.genes = genes
         self.__reset_params()
 
@@ -26,7 +26,8 @@ class Individual:  # Route: possible solution to TSP
     @property
     def fitness(self):
         if self.__fitness == 0:
-            self.__fitness = 1 / self.travel_cost  # Normalize travel cost
+            self.__fitness = 1 /( self.travel_cost + 10e-9) # Normalize travel cost
+            # print(self.travel_cost)
         return self.__fitness
 
     @property
@@ -40,6 +41,7 @@ class Individual:  # Route: possible solution to TSP
                     dest = self.genes[i+1]
 
                 self.__travel_cost += origin.get_distance_to(dest)
+        # print(self.__travel_cost)
 
         return self.__travel_cost
 

@@ -15,14 +15,16 @@ class Gene:  # City
         self.name = name
         self.lat = lat
         self.lng = lng
-        self.x_test = 
 
+        
     def get_distance_to(self, dest):
         origin = (self.lat, self.lng)
         dest = (dest.lat, dest.lng)
 
         forward_key = origin + dest
         backward_key = dest + origin
+        # print(forward_key)
+        # print(backward_key)
 
         if forward_key in Gene.__distances_table:
             return Gene.__distances_table[forward_key]
@@ -30,7 +32,7 @@ class Gene:  # City
         if backward_key in Gene.__distances_table:
             return Gene.__distances_table[backward_key]
 
-        dist = int(haversine(origin, dest))
+        dist = int(haversine(origin, dest, unit = 'm'))
         Gene.__distances_table[forward_key] = dist
 
         return dist
