@@ -40,20 +40,26 @@ def evolve(pop, tourn_size, mut_rate):
 
     # Elitism
     for _ in range(elitism_num):
-        fittest = pop.get_fittest()
-        new_generation.add(fittest)
-        pop.rmv(fittest)
+        fittest = pop.get_fittest() #Get best solutions from population
+        new_generation.add(fittest) #Add best sol to new generation
+        pop.rmv(fittest) #Remove those from the original population
 
-    # Crossover
+    # Crossover 
+    ###################################
+    #Select parents from good solution
+    ######################################
     for _ in range(elitism_num, pop_size):
-        parent_1 = selection(new_generation, tourn_size)
-        parent_2 = selection(new_generation, tourn_size)
-        child = crossover(parent_1, parent_2)
-        new_generation.add(child)
+        parent_1 = selection(new_generation, tourn_size) #Select parent from good solution
+        parent_2 = selection(new_generation, tourn_size) #Select parent
+        child = crossover(parent_1, parent_2) 
+        new_generation.add(child) #add child of parents to new generation
 
     # Mutation
+    #####################################
+    #Should maybe select  mutations from good solutions
+    #####################################
     for i in range(elitism_num, pop_size):
-        mutate(new_generation.individuals[i], mut_rate)
+        mutate(new_generation.individuals[i], mut_rate) #Swap n individuals from old solution with mutations
 
     return new_generation
 
@@ -105,8 +111,8 @@ def run_ga(genes, pop_size, n_gen, tourn_size, mut_rate, verbose=1):
 
     start_time = time()
     while counter < n_gen:
-        population = evolve(population, tourn_size, mut_rate)
-        cost = population.get_fittest().travel_cost
+        population = evolve(population, tourn_size, mut_rate) ## Selection, Crossover, Mutation
+        cost = population.get_fittest().travel_cost #Minimize cost
 
         # print (cost)
         if cost < min_cost:
