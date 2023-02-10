@@ -6,7 +6,10 @@ The current version is a Python implementation of a Genetic Algorithm to solve t
 
 ## Output Example
 
-![output-ga](https://i.imgur.com/Zkj0z7m.png)
+![output-ga]([https://i.imgur.com/Zkj0z7m.png](https://github.com/astridfos/TSP-GA/blob/master/src/inter_clust.png?raw=true))
+![output-ga]([https://github.com/astridfos/TSP-GA/blob/master/src/plot_route.png?raw=true])
+
+
 
 ## Requirements
 You'll need Python 3.x x64 to be able to run theses projects.
