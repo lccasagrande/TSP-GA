@@ -7,6 +7,9 @@ import random
 import geopandas
 import sklearn
 from sklearn.cluster import KMeans
+from sklearn.cluster import MiniBatchKMeans
+from sklearn.cluster import FeatureAgglomeration
+from sklearn.cluster import SpectralBiclustering
 from cycler import cycler
 import numpy as np
 
@@ -14,18 +17,31 @@ import numpy as np
 def get_genes_from(fn, n_clusters, sample_n=0):
     df = data = pd.read_excel(r'friday_xy_1.xlsx')
     random.seed(1)
-    df = df.sample(500).reset_index()
+    df = df.sample(100).reset_index()
+    # df = df.reset_index()
     n_clusters = n_clusters
     df = geopandas.GeoDataFrame(df, geometry=geopandas.points_from_xy(df.x, df.y))
 
+    kmeans = KMeans(n_clusters = n_clusters, init ='k-means++')
+    kmeans.fit(df[df.columns[2:4]]) # Compute k-means clustering.
+    df['cluster_label'] = kmeans.fit_predict(df[df.columns[2:4]])
+    centers = kmeans.cluster_centers_ # Coordinates of cluster centers.
+    labels = kmeans.predict(df[df.columns[2:4]]) # Labels of each point
 
 
-    K_clusters = range(1,10)
-    kmeans = [KMeans(n_clusters=i) for i in K_clusters]
-    Y_axis = df[['y']]
-    X_axis = df[['x']]
-    score = [kmeans[i].fit(Y_axis).score(Y_axis) for i in range(len(kmeans))]
-    # Visualize
+    df.plot.scatter(x = 'x', y = 'y', c='cluster_label', s=50, cmap='viridis')
+    plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, alpha=0.5)
+    plt.savefig('clusters.png')
+
+    return df
+
+def cluster(df, n_clusters):
+    # K_clusters = range(1,6)
+    # kmeans = [MiniBatchKMeans(n_clusters=i) for i in K_clusters]
+    # Y_axis = df[['y']]
+    # X_axis = df[['x']]
+    # score = [kmeans[i].fit(Y_axis).score(Y_axis) for i in range(len(kmeans))]
+
     # plt.plot(K_clusters, score)
     # plt.xlabel('Number of Clusters')
     # plt.ylabel('Score')
@@ -35,44 +51,71 @@ def get_genes_from(fn, n_clusters, sample_n=0):
 
     kmeans = KMeans(n_clusters = n_clusters, init ='k-means++')
     kmeans.fit(df[df.columns[2:4]]) # Compute k-means clustering.
-    df['cluster_label'] = kmeans.fit_predict(df[df.columns[2:4]])
+    df['inter_cluster_label'] = kmeans.fit_predict(df[df.columns[2:4]])
     centers = kmeans.cluster_centers_ # Coordinates of cluster centers.
     labels = kmeans.predict(df[df.columns[2:4]]) # Labels of each point
-    # df.head(40)
 
-    df.plot.scatter(x = 'x', y = 'y', c=labels, s=50, cmap='viridis')
-    plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, alpha=0.5)
-    plt.savefig('clusters.png')
 
-    # route_list =[]
-    # for i in range(n_clusters-1):
-    #     route_list += df.loc[df['cluster_label'] == i]
-    # print(route_list) 
+    # print(df)
 
-    print(df)
-    return df
 
+
+    return df, centers
 
 
 # get_genes_from()
 
 
+def plot_final(df, individual):
 
+
+    from scipy.spatial import ConvexHull
+
+    fig, ax = plt.subplots(1, figsize=(8,8))
+    # plot data
+    plt.scatter(df.x, df.y, c=df.inter_cluster_label, alpha = 0.9, s=50)
+    # plot centers
+
+    # draw enclosure
+    for i in df.cluster_label.unique():
+        points = df[df.cluster_label == i][['x', 'y']].values
+        # get convex hull
+        hull = ConvexHull(points)
+        # get x and y coordinates
+        # repeat last point to close the polygon
+        x_hull = np.append(points[hull.vertices,0],
+                        points[hull.vertices,0][0])
+        y_hull = np.append(points[hull.vertices,1],
+                        points[hull.vertices,1][0])
+        # plot shape
+        plt.fill(x_hull, y_hull, alpha=0.3)
+        
+    # line1 =df.plot.scatter(x = 'x', y = 'y', c='cluster_label', marker = 'v' s=50, cmap='viridis', alpha = overlapping, lw = 5)
+    # line2 =df.plot.scatter(x = 'x', y = 'y', c='inter_cluster_label', s=50, cmap='viridis', alpha = overlapping, lw=5)
+
+    # plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, alpha=0.5)
+    plt.savefig('inter_clust.png')
 
 
 def plot(costs, individual, save_to=None):
+    color = np.random.rand(3,)
+    
+    
     plt.figure(1)
     plt.subplot(121)
-    color = np.random.rand(3,)
     plot_ga_convergence(costs, color)
     plt.subplot(122)
     plot_route(individual, color)
+
 
     if save_to is not None:
         plt.savefig(save_to)
         plt.close()
     else:
         plt.show()
+
+    
+
 
 def plot_ga_convergence(costs, color):
     x = range(len(costs))
@@ -81,6 +124,8 @@ def plot_ga_convergence(costs, color):
     plt.ylabel('cost (m)')
     plt.text(x[len(x) // 2], costs[0], 'min cost: {} m'.format(costs[-1]), ha='center', va='center')
     plt.plot(x, costs, '-', c = color)
+
+
 
 
 def plot_route(individual, color):
@@ -94,7 +139,6 @@ def plot_route(individual, color):
     
     for i in range(0, len(individual.genes)):
         x, y = m(individual.genes[i].lng, individual.genes[i].lat)
-        
         plt.plot(x, y, 'ok', color = color,  markersize=5)
         if i == len(individual.genes) - 1:
             x2, y2 = m(individual.genes[0].lng, individual.genes[0].lat)

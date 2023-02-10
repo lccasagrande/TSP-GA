@@ -8,21 +8,29 @@ from pool import Population
 import pool as pl
 from random import sample
 import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
 def run(args):
 
     # n_clusters = args.nvehicles 
     df = utils.get_genes_from(args.cities_fn, args.nvehicles)
     
-
+    empty = pd.DataFrame()
 
     for i in range(args.nvehicles):
         clus = df.loc[df['cluster_label'] == i]
         clus
         clus.loc[len(clus.index)] = [0,'Depot', 69.71059355829574, 19.01346092171551, None, i]
-        print(clus)
+        # print(clus)
+
+        temp_clus, centers = utils.cluster(clus, (int(len(clus)/3)))
+        temp_clus = temp_clus.sort_values(by=['inter_cluster_label'], ascending = True)
+        print(temp_clus)
+
 
         genes = [ga.Gene(row['USER_Akt_1'], row['y'], row['x'])
-            for _, row in clus.iterrows()]
+            for _, row in temp_clus.iterrows()]
+
         # sample_n = random.randint(4,np.round(len(clus))) #Ensuring sample_n changes each time
         sample_n = 0
 
@@ -32,22 +40,34 @@ def run(args):
             genes = sample(genes, sample_n) #
 
 
-
         if args.verbose:
             print("-- Running TSP-GA with {} cities --".format(len(genes)))
 
 
 
-        history = pl.run_ga(genes, args.pop_size, args.n_gen,
-                            args.tourn_size, args.mut_rate, args.verbose)
 
+        history = pl.run_ga(genes, args.pop_size, args.n_gen,
+                            args.tourn_size, args.mut_rate, args.verbose)  #Returns a df with [generations],[total time] and [route]
+
+
+        empty = empty.append(clus)
+        # test = pd.concat([empty, clus])
+        # print(test)
+        # print(empty)
         if args.verbose:
             print("-- Drawing Route --")
 
         utils.plot(history['cost'], history['route'])
-
+        utils.plot_final(empty,history['route'])
         if args.verbose:
             print("-- Done --")
+
+    
+        # clus.plot.scatter(x = 'x', y = 'y', c='inter_cluster_label', s=50, cmap='viridis')
+        # plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, alpha=0.5)
+
+
+        # plt.savefig('clusters_'+str(i)+'.png')
 
 
 

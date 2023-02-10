@@ -30,6 +30,8 @@ class Population:  # Population of individuals
             if route.fitness > fittest.fitness:
                 fittest = route
 
+
+
         return fittest
 
 
@@ -97,6 +99,9 @@ def mutate(individual, rate):
 
 def selection(population, competitors_n):
     return Population(sample(population.individuals, competitors_n)).get_fittest()
+
+
+
 
 
 def run_ga(genes, pop_size, n_gen, tourn_size, mut_rate, verbose=1):
