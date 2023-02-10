@@ -23,14 +23,14 @@ def run(args):
         clus.loc[len(clus.index)] = [0,'Depot', 69.71059355829574, 19.01346092171551, None, i]
         # print(clus)
 
-        temp_clus, centers = utils.cluster(clus, (int(len(clus)/3)))
+        temp_clus, centers = utils.cluster(clus, (int(len(clus)/2.5)))
         temp_clus = temp_clus.sort_values(by=['inter_cluster_label'], ascending = True)
         print(temp_clus)
 
 
-        genes = [ga.Gene(row['USER_Akt_1'], row['y'], row['x'])
+        genes = [ga.Gene(row['USER_Akt_1'], row['y'], row['x'], row['inter_cluster_label'])
             for _, row in temp_clus.iterrows()]
-
+        print(genes)
         # sample_n = random.randint(4,np.round(len(clus))) #Ensuring sample_n changes each time
         sample_n = 0
 

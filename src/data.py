@@ -11,10 +11,11 @@ class Gene:  # City
     # keep distances from cities saved in a table to improve execution time.
     __distances_table = {}
 
-    def __init__(self, name, lat, lng):
+    def __init__(self, name, lat, lng, cluster):
         self.name = name
         self.lat = lat
         self.lng = lng
+        self.cluster = cluster
 
         
     def get_distance_to(self, dest):

@@ -4,6 +4,7 @@ from time import time
 from random import random, randint, sample
 from haversine import haversine
 from tsp_ga import Individual
+from data import Gene
 
 
 
@@ -16,6 +17,7 @@ class Population:  # Population of individuals
         individuals = []
         for _ in range(sz):
             individuals.append(Individual(sample(genes, len(genes))))
+            # individuals.append(Individual(getattr(genes, 'inter_cluster_label')))
         return Population(individuals)
 
     def add(self, route):
