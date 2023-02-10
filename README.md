@@ -5,8 +5,8 @@ The current version is a Python implementation of a Genetic Algorithm to solve t
 
 
 ## Output Example
-<img src="https://github.com/astridfos/TSP-GA/blob/master/src/inter_clust.png?raw=true"  width="60%" height="30%">
-<img src="https://github.com/astridfos/TSP-GA/blob/master/src/plot_route.png?raw=true"  width="60%" height="30%">
+<img src="https://github.com/astridfos/TSP-GA/blob/master/src/inter_clust.png?raw=true"  width="30%" height="30%">
+<img src="https://github.com/astridfos/TSP-GA/blob/master/src/plot_route.png?raw=true"  width="40%" height="40%">
 
 
 
