@@ -1,5 +1,8 @@
 ## Overview
-This repository contains a generic Python implementation of a Genetic Algorithm to solve the Travelling Salesman Problem (TSP). Geographic coordinates of cities are provided as input to generate a edge-weighted complete graph where the weights are the distance between the cities in kilometers.
+This repository is a modification of a generic Python implementation of a Genetic Algorithm to solve the Travelling Salesman Problem (TSP). Geographic coordinates of cities are provided as input to generate a edge-weighted complete graph where the weights are the distance between the cities in kilometers.
+
+The current version is a Python implementation of a Genetic Algorithm to solve the Vehicle Routing Problem (VRP), using clustering techniques. 
+
 
 ## Output Example
 
